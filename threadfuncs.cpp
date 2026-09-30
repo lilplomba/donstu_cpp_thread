@@ -2,6 +2,8 @@
 #include "threadfuncs.h"
 
 #include <iostream>
+#include <chrono>
+#include <thread>
 #include <sstream>
 #include <unistd.h>
 #include <syscall.h>
@@ -20,13 +22,15 @@ Logger::~Logger() {
   // std::ofstream close file here automatically
 }
 
-void Logger::writeLine(const std::string& msg) {
+bool Logger::writeLine(const std::string& msg) {
   std::lock_guard<std::mutex> lock(mutex_);
-  file_ << msg;
+  file_ << msg << "\n" ;
   file_.flush();
   if (!file_) {
     std::cerr << "write failed: " << msg << "\n";
+	return false;
   }
+	return true;
 }
 
 pid_t getThreadID() {
